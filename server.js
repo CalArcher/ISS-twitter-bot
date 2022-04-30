@@ -120,7 +120,6 @@ class App {
             thisObj.findClose()
             thisObj.findMatching()
             thisObj.setTweetCondition()
-            thisObj.domDataDisplay()
             thisObj.tweet()
         }, 1500);
     }
