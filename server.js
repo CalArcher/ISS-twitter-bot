@@ -100,22 +100,14 @@ class App {
             if(this.tweetContent != undefined){
                 await rwClient.v1.tweet(this.tweetContent)
                 console.log(this.tweetContent)
-                console.log('NEW') 
                 this.tweetContent = undefined
             }else if(this.tweetContent === undefined){
                 console.log(this.tweetContent + ' this is tweetcontent')
-                console.log('------------')
             }
                       
         } catch (error) {
             console.log(error)
         }
-    }
-
-      //adds all gathered data to DOM
-      domDataDisplay(){
-        document.querySelector('h2').innerText = `ISS Latitude is ${this.astronautLat}, Longitude is ${this.astronautLong}`
-        document.querySelector('iframe').src = `https://maps.google.com/maps?q=33,23&hl=es&z=14&amp;output=embed`
     }
 
     //order to call functions 
