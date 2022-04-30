@@ -110,7 +110,7 @@ class App {
         }
     }
 
-    //order to call functions 
+    //order to call functions  
     callOrder(){
         this.fetchPeople()
         this.fetchCoords()
