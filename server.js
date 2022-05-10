@@ -19,6 +19,7 @@ app.listen(PORT, _ => {
 const _fetch = require("./fetch")
 const rwClient = require("./twitterClient") 
 const v = require("./volcanoLatLongName")
+const coordData = require('./coords.json')
 
 class App {
     constructor(){
@@ -112,7 +113,7 @@ class App {
         }
     }
 
-    makeObject(){
+    updateJSON(){
         if(this.tweetContent){
             let spaceData = {
                 'latISS': this.astronautLat,
@@ -121,11 +122,19 @@ class App {
                 'volcanoLong': this.matchingLong,
                 'volcanoName': this.matchingName
             }
-            console.log(spaceData)
-        }else if(!this.tweetContent){
-            console.log('!tweetContent')
+            let spaceDataStr = JSON.stringify(spaceData, null, 2)
+            fs.writeFile('coords.json', spaceDataStr, ShowError)
+            function ShowError(err){
+                console.log(err)
+            }
         }
     }
+    getJSON(){
+        app.get('/coords', function(req,res) {
+            res.json(coordData)
+        })
+    }
+    
 
     //order to call functions  
     callOrder(){
@@ -137,7 +146,8 @@ class App {
             thisObj.findClose()
             thisObj.findMatching()
             thisObj.setTweetCondition()
-            thisObj.makeObject()
+            thisObj.updateJSON()
+            thisObj.getJSON()
             thisObj.tweet()
         }, 1500);
     }
