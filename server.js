@@ -1,5 +1,7 @@
 //basic server set up with express
+var fs = require('fs')
 const express = require('express')
+const { fstat } = require('fs')
 const path = require('path')
 const app = express()
 
@@ -110,6 +112,21 @@ class App {
         }
     }
 
+    makeObject(){
+        if(this.tweetContent){
+            let spaceData = {
+                'latISS': this.astronautLat,
+                'longISS': this.astronautLong,
+                'volcanoLat': this.closestLat,
+                'volcanoLong': this.matchingLong,
+                'volcanoName': this.matchingName
+            }
+            console.log(spaceData)
+        }else if(!this.tweetContent){
+            console.log('!tweetContent')
+        }
+    }
+
     //order to call functions  
     callOrder(){
         this.fetchPeople()
@@ -120,6 +137,7 @@ class App {
             thisObj.findClose()
             thisObj.findMatching()
             thisObj.setTweetCondition()
+            thisObj.makeObject()
             thisObj.tweet()
         }, 1500);
     }
