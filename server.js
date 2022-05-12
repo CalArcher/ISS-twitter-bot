@@ -4,6 +4,11 @@ const express = require('express')
 const { fstat } = require('fs')
 const path = require('path')
 const app = express()
+const cors = require('cors')
+app.use(cors({
+    origin: '*',
+    methods: ["GET"]
+}))
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/webpage/index.html'))
@@ -130,7 +135,7 @@ class App {
         }
     }
     getJSON(){
-        app.get('/coords', function(req,res) {
+        app.get('/data.json', function(req,res) {
             res.json(coordData)
         })
     }
