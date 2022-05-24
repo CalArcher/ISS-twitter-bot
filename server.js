@@ -1,17 +1,16 @@
 //basic server set up with express
-var fs = require('fs')
+const fs = require('fs')
 const express = require('express')
-const { fstat } = require('fs')
 const path = require('path')
 const app = express()
-const cors = require('cors')
+const cors = require('cors')        //needed so api data can be accessed by anyone
 app.use(cors({
     origin: '*',
-    methods: ["GET"]
+    methods: ["GET", "POST"]        //fetch methods allowed 
 }))
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/webpage/index.html'))
+    res.sendFile(path.join(__dirname, 'webpage/index.html'))
 })
 
 const PORT = process.env.PORT || 8080
@@ -24,10 +23,10 @@ app.listen(PORT, _ => {
 const _fetch = require("./fetch")
 const rwClient = require("./twitterClient") 
 const v = require("./volcanoLatLongName")
-const coordData = require('./coords.json')
 
 class App {
     constructor(){
+        this.coordsData
         this.namesArr = []
         this.astronautLat 
         this.astronautLong
@@ -37,6 +36,12 @@ class App {
         this.matchingLong
         this.matchingName
         this.tweetContent
+        this.passedOverVolcanos = {
+            "ZAVODOVSKI": 2,
+            "CALABOZOS": 1,
+            "TOLHUACA": 0
+        }
+        this.top3 = [["ZAVODOVSKI", 2], ["CALABOZOS", 1], ["TOLHUACA", 0]] //starting list data, will get replaced within a day for an accurate top3 list
     }
     
     //gets a list of all people in space and on the ISS, assigns to namesArr
@@ -66,7 +71,7 @@ class App {
             this.astronautLong = data.iss_position.longitude 
         })
         .catch(err => {
-            console.dir(err + ' coords err')
+            console.dir(err + ' coords')
         })
     }
 
@@ -107,39 +112,103 @@ class App {
         try {
             if(this.tweetContent != undefined){
                 await rwClient.v1.tweet(this.tweetContent)
-                console.log(this.tweetContent)
                 this.tweetContent = undefined
             }else if(this.tweetContent === undefined){
-                console.log(this.tweetContent + ' this is tweetcontent')
+                console.log(this.tweetContent + ' this is tweetContent')
             }
-                      
         } catch (error) {
-            console.log(error)
+            console.log(error + ' line 117')
         }
     }
 
+    //generates the top 3 volcanos and keeps track of all volcanos passed over
+    makeTop3(name){
+        const thisObj = this
+        try{
+                    var data = fs.readFileSync('./coords.json', 'utf-8')
+                    var dataParsed = JSON.parse(data)
+                    var volcanoList = dataParsed.passedOverVolcanos
+                    this.passedOverVolcanos = volcanoList
+
+                    var top3 = dataParsed.top3
+                    this.top3 = top3
+
+                    if(this.top3[0][0] === name){
+                        this.top3[0][1] = this.top3[0][1] + 1
+                        this.top3.sort((a,b) => b[1] - a[1])
+                    }
+                    if(this.top3[1][0] === name){
+                        this.top3[1][1] = this.top3[1][1] + 1
+                        this.top3.sort((a,b) => b[1] - a[1])
+                    }
+                    if(this.top3[2][0] === name){
+                        this.top3[2][1] = this.top3[2][1] + 1
+                        this.top3.sort((a,b) => b[1] - a[1])
+                    }
+                //checks if volcano exists in passedOver list, and if it is bigger than top3[2] it replaces top3[2]
+                if(this.passedOverVolcanos[name] >= 1 ){
+                    this.passedOverVolcanos[name] = this.passedOverVolcanos[name] + 1
+                    if(top3.includes(volcanoList[name])){  
+                        let idxOfExisting = top3.indexOf(volcanoList[name])
+                        thisObj.top3[idxOfExisting] = top3[idxOfExisting] + 1
+                    }else if(volcanoList[name] > thisObj.top3[2][1]){   
+                        thisObj.top3[2] = [name, this.passedOverVolcanos[name]]
+                        this.top3.sort((a,b) => b[1] - a[1])
+                    }
+                }else{
+                    this.passedOverVolcanos[name] = 1
+                }
+        } catch(e){
+            console.log(e)
+        } 
+    }
+ 
+    //if a new volcano is found, updates coords.json with new data
     updateJSON(){
         if(this.tweetContent){
-            let spaceData = {
-                'latISS': this.astronautLat,
-                'longISS': this.astronautLong,
-                'volcanoLat': this.closestLat,
-                'volcanoLong': this.matchingLong,
-                'volcanoName': this.matchingName
-            }
-            let spaceDataStr = JSON.stringify(spaceData, null, 2)
-            fs.writeFile('coords.json', spaceDataStr, ShowError)
-            function ShowError(err){
-                console.log(err)
+            try {
+                let spaceData = {
+                    'latISS': this.astronautLat,
+                    'longISS': this.astronautLong,
+                    'volcanoLat': this.closestLat,
+                    'volcanoLong': this.matchingLong,
+                    'volcanoName': this.matchingName,
+                    'passedOverVolcanos': this.passedOverVolcanos,
+                    'top3': this.top3
+                }
+                let spaceDataStr = JSON.stringify(spaceData, null, 2)
+                fs.writeFileSync('coords.json', spaceDataStr, ShowError)
+               
+                function ShowError(err){
+                    console.log(err)
+                }
+            } catch (error) {
+                console.log(error)
             }
         }
     }
-    getJSON(){
-        app.get('/data.json', function(req,res) {
-            res.json(coordData)
-        })
+
+    //updates the variable coordsData with current data from coords.json
+    getData(){
+            try{
+                let dataStr = fs.readFileSync('./coords.json', 'utf-8')
+                this.coordsData = JSON.parse(dataStr)
+            } catch(e){
+                console.log(e)
+            }    
     }
-    
+
+    //creates path to get api data
+    getJSON(){
+        let thisObj = this
+        try {
+            app.get('/data.json', function(req,res) {
+                res.json(thisObj.coordsData)
+            })
+        } catch (error) {
+            console.log(error)
+        }        
+    }
 
     //order to call functions  
     callOrder(){
@@ -151,10 +220,16 @@ class App {
             thisObj.findClose()
             thisObj.findMatching()
             thisObj.setTweetCondition()
-            thisObj.updateJSON()
-            thisObj.getJSON()
-            thisObj.tweet()
-        }, 1500);
+            setTimeout(function(){
+                 thisObj.makeTop3(thisObj.matchingName)
+            }, 500)
+            setTimeout(function() {
+                thisObj.updateJSON()
+                thisObj.getData()
+                thisObj.getJSON()
+                thisObj.tweet()  
+            }, 800)        
+        }, 2000);
     }
 
     //repeats callOrder() every x seconds
@@ -162,11 +237,19 @@ class App {
         const thisObj = this
         let callRepeat = setInterval(function() {
             thisObj.callOrder()
-        }, 7000)
+        }, 8000)
     }
 }
 
 let ISSTweet = new App()
 
 ISSTweet.repeater()
+
+
+//used to ping my heroku dyno so the server does not sleep
+var https = require("https");
+setInterval(function() {
+    https.get("https://iss-tweet-bot.herokuapp.com/");
+    console.log('pinged')
+}, 700000)
 

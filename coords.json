@@ -1,7 +1,29 @@
 {
-  "latISS": "-16.0324",
-  "longISS": "-71.4066",
-  "volcanoLat": "-16.191",
-  "volcanoLong": "-71.53",
-  "volcanoName": "NEVADO CHACHANI"
+  "latISS": "-2.8718",
+  "longISS": "35.3875",
+  "volcanoLat": "-2.764",
+  "volcanoLong": "35.914",
+  "volcanoName": "OL DOINYO LENGAI",
+  "passedOverVolcanos": {
+    "ZAVODOVSKI": 2,
+    "CALABOZOS": 1,
+    "TOLHUACA": 0,
+    "HARRAT LUNAYYIR": 1,
+    "MEHETIA": 1,
+    "OL DOINYO LENGAI": 1
+  },
+  "top3": [
+    [
+      "ZAVODOVSKI",
+      2
+    ],
+    [
+      "CALABOZOS",
+      1
+    ],
+    [
+      "TOLHUACA",
+      0
+    ]
+  ]
 }
