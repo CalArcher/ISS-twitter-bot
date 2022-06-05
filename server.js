@@ -37,11 +37,8 @@ class App {
         this.matchingName
         this.tweetContent
         this.passedOverVolcanos = {
-            "ZAVODOVSKI": 2,
-            "CALABOZOS": 1,
-            "TOLHUACA": 0
         }
-        this.top3 = [["ZAVODOVSKI", 2], ["CALABOZOS", 1], ["TOLHUACA", 0]] //starting list data, will get replaced within a day for an accurate top3 list
+        this.top3 = [["0",0],["0",0],["0",0]] //starting list data, will get replaced within a day for an accurate top3 list
     }
     
     //gets a list of all people in space and on the ISS, assigns to namesArr
@@ -127,39 +124,43 @@ class App {
     makeTop3(name){
         const thisObj = this
         try{
-                var data = fs.readFileSync('./coords.json', 'utf-8')
-                var dataParsed = JSON.parse(data)
-                var volcanoList = dataParsed.passedOverVolcanos
-                thisObj.passedOverVolcanos = volcanoList
+            if(thisObj.tweetContent){ 
+                    var data = fs.readFileSync('./coords.json', 'utf-8')
+                    var dataParsed = JSON.parse(data)
+                    var volcanoList = dataParsed.passedOverVolcanos
+                    thisObj.passedOverVolcanos = volcanoList
 
-                var top3 = dataParsed.top3
-                thisObj.top3 = top3
+                    var top3 = dataParsed.top3
+                    thisObj.top3 = top3
 
-                //checks if volcano exists in passedOver list, and if it is bigger than top3[2] it replaces top3[2]
-                if(volcanoList[name] == undefined){
-                    thisObj.passedOverVolcanos[name] = 1
-                    if(thisObj.top3[2] == undefined){   
-                        thisObj.top3[2] = [name, thisObj.passedOverVolcanos[name]]
-                        thisObj.top3.sort((a,b) => b[1] - a[1])
+                    //checks if volcano exists in passedOver list, and if it is bigger than top3[2] it replaces top3[2]
+                    if(volcanoList[name] == undefined){
+                        thisObj.passedOverVolcanos[name] = 1
+                        console.log(thisObj.passedOverVolcanos)
+                        if(thisObj.top3[2][0] === '0'){   //from null to '0'
+                            thisObj.top3[2] = [name, thisObj.passedOverVolcanos[name]]
+                            thisObj.top3.sort((a,b) => b[1] - a[1])
+                        }
                     }
-                }
-                else if(volcanoList[name] >= 1 ){
-                    thisObj.passedOverVolcanos[name] = thisObj.passedOverVolcanos[name] + 1
-                    if(thisObj.top3[0][0] === name){  
-                        thisObj.top3[0][1] = top3[0][1] + 1
-                        thisObj.top3.sort((a,b) => b[1] - a[1])
-                    }else if(thisObj.top3[1][0] === name){  
-                        thisObj.top3[1][1] = top3[1][1] + 1
-                        thisObj.top3.sort((a,b) => b[1] - a[1])
-                    }else if(thisObj.top3[2][0] === name){  
-                        thisObj.top3[2][1] = top3[2][1] + 1
-                        thisObj.top3.sort((a,b) => b[1] - a[1])
-                    }else if(volcanoList[name] > thisObj.top3[2][1]){   
-                        thisObj.top3.sort((a,b) => b[1] - a[1])
-                        thisObj.top3[2] = [name, thisObj.passedOverVolcanos[name]]
-                        thisObj.top3.sort((a,b) => b[1] - a[1])
+
+                    else if(volcanoList[name] >= 1 ){
+                        thisObj.passedOverVolcanos[name] = thisObj.passedOverVolcanos[name] + 1
+                        if(thisObj.top3[0][0] === name){  
+                            thisObj.top3[0][1] = top3[0][1] + 1
+                            thisObj.top3.sort((a,b) => b[1] - a[1])
+                        }else if(thisObj.top3[1][0] === name){  
+                            thisObj.top3[1][1] = top3[1][1] + 1
+                            thisObj.top3.sort((a,b) => b[1] - a[1])
+                        }else if(thisObj.top3[2][0] === name){  
+                            thisObj.top3[2][1] = top3[2][1] + 1
+                            thisObj.top3.sort((a,b) => b[1] - a[1])
+                        }else if(volcanoList[name] > thisObj.top3[2][1]){   
+                            thisObj.top3.sort((a,b) => b[1] - a[1])
+                            thisObj.top3[2] = [name, thisObj.passedOverVolcanos[name]]
+                            thisObj.top3.sort((a,b) => b[1] - a[1])
+                        }
                     }
-                }
+                }     
         } catch(e){
             console.log(e)
         } 

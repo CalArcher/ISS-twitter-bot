@@ -1,9 +1,22 @@
 {
-  "latISS": "-2.8718",
-  "longISS": "35.3875",
-  "volcanoLat": "-2.764",
-  "volcanoLong": "35.914",
-  "volcanoName": "OL DOINYO LENGAI",
+  "latISS": "44.2876",
+  "longISS": "-121.8263",
+  "volcanoLat": "44.285",
+  "volcanoLong": "-121.841",
+  "volcanoName": "BELKNAP",
   "passedOverVolcanos": {},
-  "top3": []
+  "top3": [
+    [
+      "0",
+      0
+    ],
+    [
+      "0",
+      0
+    ],
+    [
+      "0",
+      0
+    ]
+  ]
 }
