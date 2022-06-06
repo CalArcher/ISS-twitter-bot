@@ -6,7 +6,7 @@ const app = express()
 const cors = require('cors')        //needed so api data can be accessed by anyone
 app.use(cors({
     origin: '*',
-    methods: ["GET", "POST"]        //fetch methods allowed 
+    methods: ["GET"]        //fetch methods allowed 
 }))
 
 app.get('/', (req, res) => {
@@ -26,6 +26,7 @@ const v = require("./volcanoLatLongName")
 
 class App {
     constructor(){
+        this.oldTweet
         this.coordsData
         this.namesArr = []
         this.astronautLat 
@@ -107,7 +108,8 @@ class App {
     //sends the tweet when the tweetContent is defined
     tweet = async() => {
         try {
-            if(this.tweetContent != undefined){
+            if(this.tweetContent != undefined && this.tweetContent != this.oldTweet){ 
+                this.oldTweet = this.tweetContent
                 await rwClient.v1.tweet(this.tweetContent)
                 this.tweetContent = undefined
             }else if(this.tweetContent === undefined){
