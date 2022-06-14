@@ -6,7 +6,7 @@
 
 #### This project has two functionalities, being an API and a Twitter bot. 
 
-- #### The Twitter bot will tweet to a random astronaut aboard the International Space Station when they pass over a volcano on the surface of the Earth. 
+- #### The Twitter bot will send a tweet to a random astronaut aboard the International Space Station when they pass over a volcano on the surface of the Earth. 
 
 - #### The API keeps track of all of the volcanos the I.S.S. passes over, including the number of times, the top three volcanos the I.S.S. has passed over, as well as data about the most recently passed over volcano. 
 
