@@ -36,7 +36,7 @@
 
 #### Because Heroku's free dynos filesystem is ephemeral, and the servers restart every 24 hours, the data from my JSON file is reset. At first, I wanted to keep a running tally of the top three volcanos, but because it resets I changed it to be the top three of the day. 
 &nbsp;
-#### I would eventually like to store my JSON data on AWS or another database so that I can see what the most passed over volcano truly is. 
+#### I would eventually like to store my volcano data on a database so that I can see what the most passed over volcano truly is. 
 &nbsp;
 #### The second complication I had is that heroku is running the LTS version of Node. The native fetch function in Node was introduced in v18. To get around that, I had to use a fetch polyfill from [gjuoun](https://gist.github.com/gjuoun/f08f5f0298be14f88f32ffb46315e0dd). This however, only supported HTTPS requests, and not HTTP. The API I chose used HTTP, so I took gjuoun's polyfill, and with the help of [Octoshrimpy](https://github.com/octoshrimpy), I made the polyfill support HTTP. 
 &nbsp;
