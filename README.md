@@ -1,3 +1,5 @@
+# Note: I have put this project to sleep due to Twitter's recent changes. All bot tweets were deleted by twitter.
+
 # **I.S.S. Volcano Alert**
 
 ## [API](https://iss-tweet-bot.herokuapp.com/data.json) | [Twitter Bot](https://twitter.com/ISS_ALERT) | [Website](https://iss-data.netlify.app/) 
